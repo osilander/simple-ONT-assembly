@@ -101,7 +101,7 @@ The next step is quality control of the reads. We need to make sure that most of
 # note that you have to "feed" your data to chopper using cat
 # the -q options specifies the average read quality
 # the -l option specifies the minimum length
-cat reads.fastq | chopper -q 10 -l 1000 --maxlength 100000 --headcrop 50 --tailcrop 50 > trim_reads.fastq
+cat reads.fastq | chopper -q 10 -l 1000 --maxlength 100000 --headcrop 50 --tailcrop 50 > trim.reads.fastq
 ```
 ### Contamination
 It is possible that there is lambda phage control DNA in your sample, although in most cases this will not be true consult the individual(s) who did the sequencing. If there is, you will have to map out your reads against the genome of lambda and take only those reads that don't map. You can also mapp out against other common contaminants, such as the human genome, or common bacteria or phages that are used in your lab setting. For these cases I recommend `bwa mem`. Below, I use "reference" to indicate the genome (contaminant) you are mapping against.
@@ -109,14 +109,14 @@ It is possible that there is lambda phage control DNA in your sample, although i
 ```bash
 # this maps, gets unmapped reads, and transforms them back into a fastq
 # untested
-bwa mem -ax map-ont reference.fasta reads.fastq | samtools view -f 4 | samtools fastq > uncontam.reads.fastq
+bwa mem -ax map-ont reference.fasta trim.reads.fastq | samtools view -f 4 | samtools fastq > uncontam.reads.fastq
 ```
 
 ### Assembly
 For assembly we will use `raven`. This is a great and fast assembler. On a laptop it might take ten minutes. On a reasonable server-scale computer (e.g. 40 threads, 200GB RAM), it should take less than two minutes. Be very careful, the assembly will output directly to standard out (the terminal window), so we have to redirect the output to a file. The default number of threads is quite small, so here we give it 16. Note the redirect arrow `>` and the output to a `.fasta` file. Note that in the syntax below I have returned to the `reads.fastq` naming rather than `uncontam.reads.fastq`.
 
 ```bash
-raven -t 16 reads.fastq > assembly.fasta
+raven -t 16 trim.reads.fastq > assembly.fasta
 ```
 
 ### Polishing
@@ -129,7 +129,7 @@ Unfortunately we will also have to select a model. Assuming you have recent flow
 # first activate
 mamba activate medaka
 
-medaka_consensus -i reads.fastq -d assembly.fasta -o polished-assembly -t 4 -m r104_e81_sup_variant_g610
+medaka_consensus -i trim.reads.fastq -d assembly.fasta -o polished-assembly -t 4 -m r104_e81_sup_variant_g610
 
 # deactivate to move back into base env
 mamba deactivate
