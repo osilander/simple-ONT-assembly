@@ -21,6 +21,7 @@ For read QC, trimming, visualisation, assembly, and annotation, we require a few
 For general sequence handling and characterisation we will use [seqkit](https://bioinf.shenwei.me/seqkit/usage/).<br>
 For read visualisation we will use [NanoPlot](https://github.com/wdecoster/NanoPlot).<br>
 For read QC and trimming we will use [chopper](https://github.com/wdecoster/chopper).<br>
+For optional read mapping we will use [bwa mem](https://github.com/lh3/bwa).<br>
 For assembly we will use [raven](https://github.com/lbcb-sci/raven). [Flye](https://github.com/fenderglass/Flye) can also be used.<br>
 For polishing we will use [medaka](https://github.com/nanoporetech/medaka).<br>
 For annotation we will use [prokka](https://github.com/tseemann/prokka). [Bakta](https://github.com/oschwengers/bakta) can also be used.<br>
@@ -33,6 +34,8 @@ mamba install -c bioconda seqkit
 mamba install -c bioconda nanoplot
 
 mamba install -c bioconda chopper
+
+mamba install -c bioconda bwa
 
 # note that raven is "raven-assembler"
 mamba install -c bioconda raven-assembler
@@ -86,9 +89,17 @@ The next step is quality control of the reads. We need to make sure that most of
 # the -l option specifies the minimum length
 cat reads.fastq | chopper -q 10 -l 1000 --maxlength 100000 > trim_reads.fastq
 ```
+### Contamination
+It is possible that there is lambda phage control DNA in your sample, although in most cases this will not be true consult the individual(s) who did the sequencing. If there is, you will have to map out your reads against the genome of lambda and take only those reads that don't map. You can also mapp out against other common contaminants, such as the human genome, or common bacteria or phages that are used in your lab setting. For these cases I recommend `bwa mem`. Below, I use "reference" to indicate the genome (contaminant) you are mapping against.
+
+```bash
+# this maps, gets unmapped reads, and transforms them back into a fastq
+# untested
+bwa mem -ax map-ont reference.fasta reads.fastq | samtools view -f 4 | samtools fastq > uncontam.reads.fastq
+```
 
 ### Assembly
-For assembly we will use `raven`. This is a great and fast assembler. On a laptop it might take ten minutes. On a reasonable server-scale computer (e.g. 40 threads, 200GB RAM), it should take less than two minutes. Be very careful, the assembly will output directly to standard out (the terminal window), so we have to redirect the output to a file. The default number of threads is quite small, so here we give it 16. Note the redirect arrow `>` and the output to a `.fasta` file.
+For assembly we will use `raven`. This is a great and fast assembler. On a laptop it might take ten minutes. On a reasonable server-scale computer (e.g. 40 threads, 200GB RAM), it should take less than two minutes. Be very careful, the assembly will output directly to standard out (the terminal window), so we have to redirect the output to a file. The default number of threads is quite small, so here we give it 16. Note the redirect arrow `>` and the output to a `.fasta` file. Note that in the syntax below I have returned to the `reads.fastq` naming rather than `uncontam.reads.fastq`.
 
 ```bash
 raven -t 16 reads.fastq > assembly.fasta
