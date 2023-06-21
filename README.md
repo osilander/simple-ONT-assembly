@@ -2,7 +2,7 @@
 Simple instructions for long read Oxford Nanopore assembly with some extras
 
 ## Package Management
-We use a package manager to take care of dependencies. For speed we use `mamba` not `conda`. Note that the `mamba` [installation instructions](https://mamba.readthedocs.io/en/latest/installation.html) say to install directly from mambaforge. Check for the install package on your OS, or the link [here](https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh) (right-click and copy link) provides the download.
+We use a package manager to take care of dependencies. For speed we use `mamba` not `conda`. Note that the `mamba` [installation instructions](https://mamba.readthedocs.io/en/latest/installation.html) say to install directly from mambaforge. Check for the install package on your OS, or the link [here](https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh) (right-click and copy link) provides the Linux download.
 
 To download and install the package, move to the terminal and use `wget`, and then run using `bash`. This will take you through the installation, in which you agree to the T&C and direct it to the installation location (default is usually fine):
 
@@ -22,8 +22,8 @@ For general sequence handling and characterisation we will use [seqkit](https://
 For read visualisation we will use [NanoPlot](https://github.com/wdecoster/NanoPlot).<br>
 For read QC and trimming we will use [chopper](https://github.com/wdecoster/chopper).<br>
 For assembly we will use [raven](https://github.com/lbcb-sci/raven). [Flye](https://github.com/fenderglass/Flye) can also be used.<br>
-For annotation we will use [prokka](https://github.com/tseemann/prokka). [Bakta](https://github.com/oschwengers/bakta) can also be used.
-For assembly visualisation we can use [Bandage](https://rrwick.github.io/Bandage/). I will not cover that here.
+For annotation we will use [prokka](https://github.com/tseemann/prokka). [Bakta](https://github.com/oschwengers/bakta) can also be used.<br>
+For assembly visualisation we could use [Bandage](https://rrwick.github.io/Bandage/). I will not cover that here.
 
 ```bash
 # we will install all of these one-by-one to make sure it goes smoothly
@@ -38,13 +38,14 @@ mamba install -c bioconda raven-assembler
 
 mamba install -c bioconda prokka
 
+# this is an extra program to visualise directory structure
 mamba install -c conda-forge tree
 ```
 
 ### General notes
 Several of the steps below may take a few minutes. For any step that takes longer than 2-3 minutes I recommend `tmux`, a terminal multiplexer that will esnure your process deosn't stop once you have disconnected from the server.
 
-You should endeavour to keep your data organised. In general, you should have the original data stored elsewhere and always keep it untouched. You should operate only on copied data. The data that you are using in the steps below should exist in a presonal directory (either on the server or on your computer). This directory should indicate the title or subject of your project, e.g. `soil-isolate-assemblies`. It is best in my experience to put the sequence data files in a directory caleld `data`. Any results from the analyses below you should store in a directory called `results`. To visualise your directory structure, I recommend [tree](https://www.tecmint.com/linux-tree-command-examples/). Please install using `mamba` (above).
+You should endeavour to keep your data organised. In general, you should have the original data stored elsewhere and always keep it untouched. You should operate only on copied data. The data that you are using in the steps below should exist in a personal directory (either on the server or on your computer). This directory should indicate the title or subject of your project, e.g. `soil-isolate-assemblies`. It is best in my experience to put the sequence data files in a directory caleld `data`. Any results from the analyses below you should store in a directory called `results`. To visualise your directory structure, I recommend [tree](https://www.tecmint.com/linux-tree-command-examples/) (above).
 
 I will not go through here in detail into file naming conventions, etc. but it is something to study beforehand. [Here](https://johndecember.com/unix/tutor/filenames.html) is an example.
 
@@ -53,10 +54,10 @@ I will not go through here in detail into file naming conventions, etc. but it i
 The first step is a quick examination of the data. Here I will assume you have a single `fastq` file containing all the reads for your strain. This file will be `reads.fastq`.
 
 ```bash
-# here the -a option gets All the statistics
+# here the -a option gets *a*ll the statistics
 seqkit stats -a reads.fastq
 ```
-The output in this case should be a table with statistics such as number of reads, average length, total length, etc. Pay attention to the total length (total number of basepairs) and the N50. The total bp should be ~50-60X higher than your genome length. For example, if your estimated genome length is 5Mbp, then you should have 250Mbp of data. Your N50 should be above 6Kbp, and ideally above 10Kbp. Anything beyond that is great but usually not needed except for highly repetitive genomes.<br>
+The output in this case should be a table with statistics such as number of reads, average length, total length, etc. Pay attention to the total length (total number of basepairs) and the N50. The total bp should be ~50 - 60X higher than your genome length. For example, if your estimated genome length is 5Mbp, then you should have 250Mbp of data. Your N50 should be above 6Kbp, and ideally above 10Kbp. Anything beyond that is great but usually not needed except for highly repetitive genomes.<br>
 If your total bp is less than 20X your genome size, the assembly is unlikely to be successful. If your N50 is less than 4Kbp (esp. before filtering) then your assembly is likely to be unsuccessful. You shouuld consider collecting additional data.
 
 ### Data visualisation
@@ -67,10 +68,10 @@ The next step will be some simple visualisation. Here we will use NanoPlot. The 
 NanoPlot -t 2 --fastq reads.fastq --maxlength 40000 --plots dot kde -o qc-plots
 ```
 
-Take a look at the output, specifically the `html` report. You should see summary statistics like those with `seqkit` but also some plots. An important plot is the bottom-most plot which should show length and quality. You need to make sure you have some long and high-quality reads.
+Take a look at the output (in the qc-plots directory), specifically the `html` report. You should see summary statistics like those with `seqkit` but also some plots. An important plot is the bottom-most plot which should show length and quality. You need to make sure you have some long and high-quality reads.
 
 ### Read QC
-The next step is quality control of the reads. We need to make sure that most of the reads are high quality (for ONT data) and not short. This is done using `chopper`. Here, we will also specify a maximum length, as reads longer than that are often artifacts.
+The next step is quality control of the reads. We need to make sure that most of the reads are high quality (for ONT data) and not short. This is done using `chopper`. Here, we will also specify a maximum length, as reads longer than that are often artifacts. Note that to determine the cutoffs here you should examine the Nanoplot output.
 
 ```bash
 # note that you have to "feed" your data to chopper using cat
@@ -99,7 +100,7 @@ With luck, the summary will indicate a single (or small number) of contigs. Note
 The last step here is annotation. Here we will use prokka, which is relatively fast and simple to use. As mentioned above, `bakta` is also a possibility, and may even be faster. The result of `prokka` will be an output directory with approximately ten files. Perhaps the most important is the Genbank `.gbk` file, which is compatible with a number of other pieces of software.
 
 ```bash
-# cpus is the number of threads
+# --cpus is the number of threads
 # --outdir is the output directory
 prokka --cpus 16 --outdir mystrain assembly.fasta
 ```
