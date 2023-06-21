@@ -63,9 +63,9 @@ tree -L 2
 ```bash
 # output from tree looks like this
 ├── soil-isolate-assemblies
-│   ├── data
-│   ├── reads.fastq
-│   └── results
+    ├── data
+    │   └── reads.fastq
+    └── results
 ```
 
 I will not go through here in detail into file naming conventions, etc. but it is something to study beforehand. [Here](https://johndecember.com/unix/tutor/filenames.html) is an example.
