@@ -13,7 +13,7 @@ bash Mambaforge-Linux-x86_64.sh
 # remove once installed
 rm Mambaforge-Linux-x86_64.sh
 ```
-You will likely have to restart your terminal window after this.
+You will likely have to restart your terminal window after this to get `mamba` working.
 
 ## Required Tools
 For read QC, trimming, visualisation, assembly, and annotation, we require a few tools. We can use `mamba` to install them. The syntax is realitvely simple. In this case we will install all into our base environment.
@@ -22,9 +22,9 @@ For general sequence handling and characterisation we will use [seqkit](https://
 For read visualisation we will use [NanoPlot](https://github.com/wdecoster/NanoPlot).<br>
 For read QC and trimming we will use [chopper](https://github.com/wdecoster/chopper).<br>
 For optional read mapping we will use [bwa mem](https://github.com/lh3/bwa).<br>
-For assembly we will use [raven](https://github.com/lbcb-sci/raven). [Flye](https://github.com/fenderglass/Flye) can also be used.<br>
+For assembly we will use [raven](https://github.com/lbcb-sci/raven) although [flye](https://github.com/fenderglass/Flye) can also be used.<br>
 For polishing we will use [medaka](https://github.com/nanoporetech/medaka).<br>
-For annotation we will use [prokka](https://github.com/tseemann/prokka). [Bakta](https://github.com/oschwengers/bakta) can also be used.<br>
+For annotation we will use [prokka](https://github.com/tseemann/prokka) although [bakta](https://github.com/oschwengers/bakta) can also be used.<br>
 For assembly visualisation we could use [Bandage](https://rrwick.github.io/Bandage/). I will not cover that here.
 
 ```bash
@@ -53,6 +53,20 @@ mamba install -c conda-forge tree
 Several of the steps below may take a few minutes. For any step that takes longer than 2-3 minutes I recommend `tmux`, a terminal multiplexer that will esnure your process deosn't stop once you have disconnected from the server.
 
 You should endeavour to keep your data organised. In general, you should have the original data stored elsewhere and always keep it untouched. You should operate only on copied data. The data that you are using in the steps below should exist in a personal directory (either on the server or on your computer). This directory should indicate the title or subject of your project, e.g. `soil-isolate-assemblies`. It is best in my experience to put the sequence data files in a directory caleld `data`. Any results from the analyses below you should store in a directory called `results`. To visualise your directory structure, I recommend [tree](https://www.tecmint.com/linux-tree-command-examples/) (above).
+
+```bash
+# the structure should look like this
+# this visualise 2 *L*evels down
+tree -L 2
+```
+
+```bash
+# output from tree looks like this
+├── soil-isolate-assemblies
+│   ├── data
+│   ├── reads.fastq
+│   └── results
+```
 
 I will not go through here in detail into file naming conventions, etc. but it is something to study beforehand. [Here](https://johndecember.com/unix/tutor/filenames.html) is an example.
 
