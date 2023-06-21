@@ -49,9 +49,10 @@ mamba install -c bioconda prokka
 mamba install -c conda-forge tree
 ```
 
-### General notes
+## General notes
 Several of the steps below may take a few minutes. For any step that takes longer than 2-3 minutes I recommend `tmux`, a terminal multiplexer that will esnure your process deosn't stop once you have disconnected from the server.
 
+#### Organisation
 You should endeavour to keep your data organised. In general, you should have the original data stored elsewhere and always keep it untouched. You should operate only on copied data. The data that you are using in the steps below should exist in a personal directory (either on the server or on your computer). This directory should indicate the title or subject of your project, e.g. `soil-isolate-assemblies`. It is best in my experience to put the sequence data files in a directory caleld `data`. Any results from the analyses below you should store in a directory called `results`. To visualise your directory structure, I recommend [tree](https://www.tecmint.com/linux-tree-command-examples/) (above).
 
 ```bash
@@ -70,12 +71,16 @@ tree -L 3
 
 I will not go through here in detail into file naming conventions, etc. but it is something to study beforehand. [Here](https://johndecember.com/unix/tutor/filenames.html) is an example.
 
+#### Code Editing and Terminal Use
+For editing code and dealing with the terminal I recomend [`VSCode`](https://code.visualstudio.com/) although there are many other options out there.
+
 ### Important Note
 If you have not basecalled your data using either the high accuracy "hac" or super high accuracy "sup" basecalling methods, then you _must_ rebasecall. "fast" basecalling is not accurate enough for good assemblies.
 
+## Assembly Process
+
 ### Quick data summary
 The first step is a quick examination of the data. Here I will assume you have a single `fastq` file containing all the reads for your strain. This file will be `reads.fastq`.
-
 
 ```bash
 # here the -a option gets *a*ll the statistics
@@ -162,5 +167,4 @@ Finally, check the split mappings (supplementary malignment) of your original re
 There are also packages to do assembly QC. I am not well acquainted with them, and many require short reads. `QUAST` is not very useful in this case, as the assemblies we are usually looking at are complete and single contig. [`ALE`](https://bioinformaticshome.com/tools/wga/descriptions/ALE-Assembly.html#gsc.tab=0) works better with short reads as far as I know
 
 ### Conclusions
-
 I think this is - approximately - best practices for now. These instructions assume substantial familiarity with the command line and some ability to trubleshoot issues that arise. The primary method for troubleshooting these is to _look very carefully_ for the specific error message and Google it, or paste the message into ChatGPT and see if it can offer help.
