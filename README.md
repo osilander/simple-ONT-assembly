@@ -164,9 +164,9 @@ prokka --cpus 16 --outdir mystrain polished.assembly.fasta
 ```
 
 ### Assembly quality control
-I will not cover methods for doing this now. There are three recommendations assuming you only have long reads. First, check the number and orientation of the rRNA operons. This is only possible for realtively common and well characterised bacterial species, and can be done using [socru](https://github.com/quadram-institute-bioscience/socru).<br>
-Second, check the length of your open reading frames. This is best done with [ideel](https://github.com/phiweger/ideel).<br>
-Finally, check the split mappings (supplementary malignment) of your original reads on your assembly. If there are locations at which there are many split mappings, it is very likely this is an assembly error. This would usually be done using the mapper above, [bwa mem](https://github.com/lh3/bwa) and then some data manipulation to find regions with lots of supplementary reads.<br>
+I will not cover methods for doing this now. There are three recommendations assuming you only have long reads. First, check the number and orientation of the rRNA operons. This is only possible for realtively common and well characterised bacterial species, and can be done using [`socru`](https://github.com/quadram-institute-bioscience/socru).<br>
+Second, check the length of your open reading frames. This is best done with [`ideel`](https://github.com/phiweger/ideel).<br>
+Finally, check the split mappings (supplementary malignment) of your original reads on your assembly. If there are locations at which there are many split mappings, it is very likely this is an assembly error. This would usually be done using the mapper above, [`bwa mem`](https://github.com/lh3/bwa) and then some data manipulation to find regions with lots of supplementary reads.<br>
 There are also packages to do assembly QC. I am not well acquainted with them, and many require short reads. [`QUAST`](https://github.com/ablab/quast) is not very useful in this case, as the assemblies we are usually looking at are complete and single contig. [`ALE`](https://bioinformaticshome.com/tools/wga/descriptions/ALE-Assembly.html#gsc.tab=0) works better with short reads as far as I know
 
 ### Conclusions
