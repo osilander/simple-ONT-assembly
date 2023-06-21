@@ -95,13 +95,13 @@ NanoPlot -t 2 --fastq reads.fastq --maxlength 40000 --plots dot kde -o qc-plots
 Take a look at the output (in the qc-plots directory), specifically the `html` report. You should see summary statistics like those with `seqkit` but also some plots. An important plot is the bottom-most plot which should show length and quality. You need to make sure you have some long and high-quality reads.
 
 ### Read QC
-The next step is quality control of the reads. We need to make sure that most of the reads are high quality (for ONT data) and not short. This is done using `chopper`. Here, we will also specify a maximum length, as reads longer than that are often artifacts. Note that to determine the cutoffs here you should examine the Nanoplot output.
+The next step is quality control of the reads. We need to make sure that most of the reads are high quality (for ONT data) and not short. This is done using `chopper`. Here, we will also specify a maximum length, as reads longer than that are often artifacts. Note that to determine the cutoffs here you should examine the Nanoplot output. I often do a head crop and tail crop (cut of the start and end of the reads) for safety's sake (e.g. if there are adaptors or greater inaccuracy in these areas.)
 
 ```bash
 # note that you have to "feed" your data to chopper using cat
 # the -q options specifies the average read quality
 # the -l option specifies the minimum length
-cat reads.fastq | chopper -q 10 -l 1000 --maxlength 100000 > trim_reads.fastq
+cat reads.fastq | chopper -q 10 -l 1000 --maxlength 100000 --headcrop 50 --tailcrop 50 > trim_reads.fastq
 ```
 ### Contamination
 It is possible that there is lambda phage control DNA in your sample, although in most cases this will not be true consult the individual(s) who did the sequencing. If there is, you will have to map out your reads against the genome of lambda and take only those reads that don't map. You can also mapp out against other common contaminants, such as the human genome, or common bacteria or phages that are used in your lab setting. For these cases I recommend `bwa mem`. Below, I use "reference" to indicate the genome (contaminant) you are mapping against.
