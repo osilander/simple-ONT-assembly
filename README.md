@@ -105,6 +105,11 @@ The last step here is annotation. Here we will use prokka, which is relatively f
 prokka --cpus 16 --outdir mystrain assembly.fasta
 ```
 
+### Assembly quality control
+I will not cover methods for doing this now. There are three recommendations assuming you only have long reads. First, check the number and orientation of the rRNA operons. This is only possible for realtively common and well characterised bacterial species, and can be done using [socru](https://github.com/quadram-institute-bioscience/socru).<br>
+Second, check the length of your open reading frames. This is best done with [ideel](https://github.com/phiweger/ideel).<br>
+Finally, check the split mappings (supplementary malignment) of your original reads on your assembly. If there are locations at which there are many split mappings, it is very likely this is an assembly error.
+
 ### Conclusions
 
 I think this is - approximately - best practices for now. These instructions assume substantial familiarity with the command line and some ability to trubleshoot issues that arise. The primary method for troubleshooting these is to _look very carefully_ for the specific error message and Google it, or paste the message into ChatGPT and see if it can offer help.
