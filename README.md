@@ -37,7 +37,17 @@ mamba install -c bioconda chopper
 mamba install -c bioconda raven-assembler
 
 mamba install -c bioconda prokka
+
+mamba install -c conda-forge tree
 ```
+
+### General notes
+Several of the steps below may take a few minutes. For any step that takes longer than 2-3 minutes I recommend `tmux`, a terminal multiplexer that will esnure your process deosn't stop once you have disconnected from the server.
+
+You should endeavour to keep your data organised. In general, you should have the original data stored elsewhere and always keep it untouched. You should operate only on copied data. The data that you are using in the steps below should exist in a presonal directory (either on the server or on your computer). This directory should indicate the title or subject of your project, e.g. `soil-isolate-assemblies`. It is best in my experience to put the sequence data files in a directory caleld `data`. Any results from the analyses below you should store in a directory called `results`. To visualise your directory structure, I recommend [tree](https://www.tecmint.com/linux-tree-command-examples/). Please install using `mamba` (above).
+
+I will not go through here in detail into file naming conventions, etc. but it is something to study beforehand. [Here](https://johndecember.com/unix/tutor/filenames.html) is an example.
+
 
 ### Quick data summary
 The first step is a quick examination of the data. Here I will assume you have a single `fastq` file containing all the reads for your strain. This file will be `reads.fastq`.
@@ -50,4 +60,50 @@ The output in this case should be a table with statistics such as number of read
 If your total bp is less than 20X your genome size, the assembly is unlikely to be successful. If your N50 is less than 4Kbp (esp. before filtering) then your assembly is likely to be unsuccessful. You shouuld consider collecting additional data.
 
 ### Data visualisation
-The next 
+The next step will be some simple visualisation. Here we will use NanoPlot. The syntax here is relatively simple. We will again assume you only have a single `.fastq`.
+
+```bash
+# -t specifies the number of threads
+NanoPlot -t 2 --fastq reads.fastq --maxlength 40000 --plots dot kde -o qc-plots
+```
+
+Take a look at the output, specifically the `html` report. You should see summary statistics like those with `seqkit` but also some plots. An important plot is the bottom-most plot which should show length and quality. You need to make sure you have some long and high-quality reads.
+
+### Read QC
+The next step is quality control of the reads. We need to make sure that most of the reads are high quality (for ONT data) and not short. This is done using `chopper`. Here, we will also specify a maximum length, as reads longer than that are often artifacts.
+
+```bash
+# note that you have to "feed" your data to chopper using cat
+# the -q options specifies the average read quality
+# the -l option specifies the minimum length
+cat reads.fastq | chopper -q 10 -l 1000 --maxlength 100000 > trim_reads.fastq
+```
+
+### Assembly
+For assembly we will use `raven`. This is a great and fast assembler. On a laptop it might take ten minutes. On a reasonable server-scale computer (e.g. 40 threads, 200GB RAM), it should take less than two minutes. Be very careful, the assembly will output directly to standard out (the terminal window), so we have to redirect the output to a file. The default number of threads is quite small, so here we give it 16. Note the redirect arrow `>` and the output to a `.fasta` file.
+
+```bash
+raven -t 16 reads.fastq > assembly.fasta
+```
+
+### Assembly summary
+For a quick summary of the assembly we will use `seqkit` again. This is relatively simple as it is the same syntax as previously.
+
+```bash
+seqkit stats -a assembly.fasta
+```
+
+With luck, the summary will indicate a single (or small number) of contigs. Note that `raven` _does not_ output a graph file, so the assembly cannot be visualised with a program like `bandage`. If you want a graph file, I recommend `flye`.
+
+### Annotation
+The last step here is annotation. Here we will use prokka, which is relatively fast and simple to use. As mentioned above, `bakta` is also a possibility, and may even be faster. The result of `prokka` will be an output directory with approximately ten files. Perhaps the most important is the Genbank `.gbk` file, which is compatible with a number of other pieces of software.
+
+```bash
+# cpus is the number of threads
+# --outdir is the output directory
+prokka --cpus 16 --outdir mystrain assembly.fasta
+```
+
+### Conclusions
+
+I think this is - approximately - best practices for now. These instructions assume substantial familiarity with the command line and some ability to trubleshoot issues that arise. The primary method for troubleshooting these is to _look very carefully_ for the specific error message and Google it, or paste the message into ChatGPT and see if it can offer help.
