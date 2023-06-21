@@ -143,13 +143,13 @@ medaka_consensus -i trim.reads.fastq -d assembly.fasta -o polished-assembly -t 4
 mamba deactivate
 ```
 
-Note that this will output the polished assembly into the named directory, but the polished verion will be `consensus.fasta`. You should rename this file to something sensible, perhaps polished-assembly.fasta.
+Note that this will output the polished assembly into the named directory, but the polished verion will be `consensus.fasta`. You should rename this file to something sensible, perhaps `polished.assembly.fasta`.
 
 ### Assembly summary
 For a quick summary of the assembly we will use `seqkit` again. This is relatively simple as it is the same syntax as previously.
 
 ```bash
-seqkit stats -a assembly.fasta
+seqkit stats -a polished.assembly.fasta
 ```
 
 With luck, the summary will indicate a single (or small number) of contigs. Note that `raven` _does not_ output a graph file, so the assembly cannot be visualised with a program like `bandage`. If you want a graph file, I recommend `flye`.
@@ -160,7 +160,7 @@ The last step here is annotation. Here we will use prokka, which is relatively f
 ```bash
 # --cpus is the number of threads
 # --outdir is the output directory
-prokka --cpus 16 --outdir mystrain assembly.fasta
+prokka --cpus 16 --outdir mystrain polished.assembly.fasta
 ```
 
 ### Assembly quality control
