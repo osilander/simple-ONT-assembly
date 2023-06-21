@@ -74,6 +74,9 @@ I will not go through here in detail into file naming conventions, etc. but it i
 #### Code Editing and Terminal Use
 For editing code and dealing with the terminal I recomend [`VSCode`](https://code.visualstudio.com/) although there are many other options out there.
 
+#### Pipeline Management
+To manage and automate the whole process I recommend [`snakemake`](https://snakemake.readthedocs.io/en/stable/) or `Nextflow`. I will not cover any of those details here.
+
 ## Important Note
 If you have not basecalled your data using either the high accuracy "hac" or super high accuracy "sup" basecalling methods, then you _must_ rebasecall. "fast" basecalling is not accurate enough for good assemblies.
 
