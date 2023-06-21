@@ -22,6 +22,7 @@ For general sequence handling and characterisation we will use [seqkit](https://
 For read visualisation we will use [NanoPlot](https://github.com/wdecoster/NanoPlot).<br>
 For read QC and trimming we will use [chopper](https://github.com/wdecoster/chopper).<br>
 For assembly we will use [raven](https://github.com/lbcb-sci/raven). [Flye](https://github.com/fenderglass/Flye) can also be used.<br>
+For polishing we will use [medaka](https://github.com/nanoporetech/medaka).<br>
 For annotation we will use [prokka](https://github.com/tseemann/prokka). [Bakta](https://github.com/oschwengers/bakta) can also be used.<br>
 For assembly visualisation we could use [Bandage](https://rrwick.github.io/Bandage/). I will not cover that here.
 
@@ -36,6 +37,9 @@ mamba install -c bioconda chopper
 # note that raven is "raven-assembler"
 mamba install -c bioconda raven-assembler
 
+# for medaka I recommend a new environment
+mamba create -n medaka -c conda-forge -c bioconda medaka
+
 mamba install -c bioconda prokka
 
 # this is an extra program to visualise directory structure
@@ -49,9 +53,12 @@ You should endeavour to keep your data organised. In general, you should have th
 
 I will not go through here in detail into file naming conventions, etc. but it is something to study beforehand. [Here](https://johndecember.com/unix/tutor/filenames.html) is an example.
 
+### Important Note
+If you have not basecalled your data using either the high accuracy "hac" or super high accuracy "sup" basecalling methods, then you _must_ rebasecall. "fast" basecalling is not accurate enough for good assemblies.
 
 ### Quick data summary
 The first step is a quick examination of the data. Here I will assume you have a single `fastq` file containing all the reads for your strain. This file will be `reads.fastq`.
+
 
 ```bash
 # here the -a option gets *a*ll the statistics
@@ -87,6 +94,18 @@ For assembly we will use `raven`. This is a great and fast assembler. On a lapto
 raven -t 16 reads.fastq > assembly.fasta
 ```
 
+### Polishing
+I recommend polishing using Oxford Nanopore's own tool, `medaka`. I have not benchmarked the polishing steps very well for any new ONT data (10.4.1). In this case we have installed `medaka` in its own environment.<br>
+Unfortunately we will also have to select a model. Assuming you have recent flow cells, chemistry, and basecalling, this is _very_ likely to be:<br>
+`r104_e81_sup_variant_g610` for super high accuracy "sup" basecalling.<br>
+`r104_e81_hac_variant_g610` for high accuracy "hac" basecalling.<br>
+
+```bash
+medaka_consensus -i reads.fastq -d assembly.fasta -o polished-assembly -t 4 -m r104_e81_sup_variant_g610
+```
+
+Note that this will output the polished assembly into the named directory, but the polished verion will be `consensus.fasta`. You should rename this file to something sensible, perhaps polished-assembly.fasta.
+
 ### Assembly summary
 For a quick summary of the assembly we will use `seqkit` again. This is relatively simple as it is the same syntax as previously.
 
@@ -108,7 +127,8 @@ prokka --cpus 16 --outdir mystrain assembly.fasta
 ### Assembly quality control
 I will not cover methods for doing this now. There are three recommendations assuming you only have long reads. First, check the number and orientation of the rRNA operons. This is only possible for realtively common and well characterised bacterial species, and can be done using [socru](https://github.com/quadram-institute-bioscience/socru).<br>
 Second, check the length of your open reading frames. This is best done with [ideel](https://github.com/phiweger/ideel).<br>
-Finally, check the split mappings (supplementary malignment) of your original reads on your assembly. If there are locations at which there are many split mappings, it is very likely this is an assembly error.
+Finally, check the split mappings (supplementary malignment) of your original reads on your assembly. If there are locations at which there are many split mappings, it is very likely this is an assembly error. This would usually be done using a mapper such as [bwa mem](https://github.com/lh3/bwa) and then some data manipulation to find regions with lots of supplementary reads.<br>
+There are also packages to do assembly QC. I am not well acquainted with them, and many require short reads. `QUAST` is not very useful in this case, as the assemblies we are usually looking at are complete and single contig. `
 
 ### Conclusions
 
