@@ -112,12 +112,13 @@ The next step is quality control of the reads. We need to make sure that most of
 cat reads.fastq | chopper -q 10 -l 1000 --maxlength 100000 --headcrop 50 --tailcrop 50 > trim.reads.fastq
 ```
 ### Contamination
-It is possible that there is lambda phage control DNA in your sample, although in most cases this will not be true consult the individual(s) who did the sequencing. If there is, you will have to map out your reads against the genome of lambda and take only those reads that don't map. You can also mapp out against other common contaminants, such as the human genome, or common bacteria or phages that are used in your lab setting. For these cases I recommend `bwa mem`. Below, I use "reference" to indicate the genome (contaminant) you are mapping against.
+It is possible that there is lambda phage control DNA in your sample, although in most cases this will not be true consult the individual(s) who did the sequencing. If there is, one option is to map out your reads against the genome of lambda and take only those reads that don't map. You can also map out against other common contaminants, such as the human genome, or common bacteria or phages that are used in your lab setting. For such mapping I recommend `bwa mem`.<br>
+However, a far easier approach is the `--contam` paramter in `chopper`, used as follows:
 
 ```bash
-# this maps, gets unmapped reads, and transforms them back into a fastq
-# untested
-bwa mem -ax map-ont reference.fasta trim.reads.fastq | samtools view -f 4 | samtools fastq > uncontam.reads.fastq
+# ref.fasta is the reference, for example lambda or human
+# this can be combined with the step above.
+cat reads.fastq | chopper --contam ref.fasta > uncontam.reads.fastq
 ```
 
 ### Assembly
