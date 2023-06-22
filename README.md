@@ -129,7 +129,7 @@ raven -t 16 trim.reads.fastq > assembly.fasta
 ```
 
 ### Polishing
-I recommend polishing using Oxford Nanopore's own tool, `medaka`. I have not benchmarked the polishing steps very well for any new ONT data (10.4.1). Note that above we have installed `medaka` in its own environment.<br>
+I recommend polishing using Oxford Nanopore's own tool, `medaka`. I have not benchmarked the polishing steps very well for any new ONT data (10.4.1 with 114 and Dorado basecalls). Note that above we have installed `medaka` in its own environment.<br>
 Unfortunately we will also have to select a model. Assuming you have recent flow cells, chemistry, and basecalling, this is _very_ likely to be:<br>
 `r104_e81_sup_variant_g610` for super high accuracy "sup" basecalling.<br>
 `r104_e81_hac_variant_g610` for high accuracy "hac" basecalling.<br>
