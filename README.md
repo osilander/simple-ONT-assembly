@@ -8,7 +8,7 @@ Simple instructions for long read Oxford Nanopore assembly with some extras
       - [Organisation](#organisation)
       - [Code Editing and Terminal Use](#code-editing-and-terminal-use)
       - [Pipeline Management](#pipeline-management)
-  - [Important Note](#important-note)
+  - [Important Basecalling Note](#important-basecalling-note)
   - [Assembly Process](#assembly-process)
     - [Quick data summary](#quick-data-summary)
     - [Data visualisation](#data-visualisation)
@@ -98,7 +98,7 @@ For editing code and dealing with the terminal I recomend [`VSCode`](https://cod
 #### Pipeline Management
 To manage and automate the whole process I recommend [`snakemake`](https://snakemake.readthedocs.io/en/stable/) or `Nextflow`. I will not cover any of those details here.
 
-## Important Note
+## Important Basecalling Note
 If you have not basecalled your data using either the high accuracy "hac" or super high accuracy "sup" basecalling methods, then you _must_ rebasecall. "fast" basecalling is not accurate enough for good assemblies.
 
 ## Assembly Process
