@@ -1,6 +1,27 @@
 # simple-ONT-assembly
 Simple instructions for long read Oxford Nanopore assembly with some extras
 
+- [simple-ONT-assembly](#simple-ont-assembly)
+  - [Package Management](#package-management)
+  - [Required Tools](#required-tools)
+  - [General notes](#general-notes)
+      - [Organisation](#organisation)
+      - [Code Editing and Terminal Use](#code-editing-and-terminal-use)
+      - [Pipeline Management](#pipeline-management)
+  - [Important Note](#important-note)
+  - [Assembly Process](#assembly-process)
+    - [Quick data summary](#quick-data-summary)
+    - [Data visualisation](#data-visualisation)
+    - [Read QC](#read-qc)
+    - [Contamination](#contamination)
+    - [Assembly](#assembly)
+    - [Polishing](#polishing)
+    - [Assembly summary](#assembly-summary)
+    - [Annotation](#annotation)
+    - [Assembly quality control](#assembly-quality-control)
+    - [Conclusions](#conclusions)
+
+
 ## Package Management
 We use a package manager to take care of dependencies. For speed we use `mamba` not `conda`. Note that the `mamba` [installation instructions](https://mamba.readthedocs.io/en/latest/installation.html) say to install directly from mambaforge. Check for the install package on your OS, or the link [here](https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh) (right-click and copy link) provides the Linux download.
 
