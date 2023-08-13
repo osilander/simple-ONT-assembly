@@ -42,7 +42,7 @@ For read QC, trimming, visualisation, assembly, and annotation, we require a few
 For general sequence handling and characterisation we will use [seqkit](https://bioinf.shenwei.me/seqkit/usage/).<br>
 For read visualisation we will use [NanoPlot](https://github.com/wdecoster/NanoPlot).<br>
 For read QC and trimming we will use [chopper](https://github.com/wdecoster/chopper).<br>
-For optional read mapping we will use [bwa mem](https://github.com/lh3/bwa).<br>
+For optional read mapping we will use [minimap2](https://github.com/lh3/minimap2).<br>
 For assembly we will use [raven](https://github.com/lbcb-sci/raven) although [flye](https://github.com/fenderglass/Flye) can also be used.<br>
 For polishing we will use [medaka](https://github.com/nanoporetech/medaka).<br>
 For annotation we will use [prokka](https://github.com/tseemann/prokka) although [bakta](https://github.com/oschwengers/bakta) can also be used.<br>
@@ -56,7 +56,7 @@ mamba install -c bioconda nanoplot
 
 mamba install -c bioconda chopper
 
-mamba install -c bioconda bwa
+mamba install -c bioconda minimap2
 
 # note that raven is "raven-assembler"
 mamba install -c bioconda raven-assembler
@@ -133,7 +133,7 @@ The next step is quality control of the reads. We need to make sure that most of
 cat reads.fastq | chopper -q 10 -l 1000 --maxlength 100000 --headcrop 50 --tailcrop 50 > trim.reads.fastq
 ```
 ### Contamination
-It is possible that there is lambda phage control DNA in your sample, although in most cases this will not be true consult the individual(s) who did the sequencing. If there is, one option is to map out your reads against the genome of lambda and take only those reads that don't map. You can also map out against other common contaminants, such as the human genome, or common bacteria or phages that are used in your lab setting. For such mapping I recommend `bwa mem`.<br>
+It is possible that there is lambda phage control DNA in your sample, although in most cases this will not be true consult the individual(s) who did the sequencing. If there is, one option is to map out your reads against the genome of lambda and take only those reads that don't map. You can also map out against other common contaminants, such as the human genome, or common bacteria or phages that are used in your lab setting. For such mapping I recommend `minimap2`.<br>
 However, a far easier approach is the `--contam` paramter in `chopper`, used as follows:
 
 ```bash
@@ -188,7 +188,7 @@ prokka --cpus 16 --outdir mystrain polished.assembly.fasta
 ### Assembly quality control
 I will not cover methods for doing this now. There are three recommendations assuming you only have long reads. First, check the number and orientation of the rRNA operons. This is only possible for realtively common and well characterised bacterial species, and can be done using [`socru`](https://github.com/quadram-institute-bioscience/socru).<br>
 Second, check the length of your open reading frames. This is best done with [`ideel`](https://github.com/phiweger/ideel).<br>
-Finally, check the split mappings (supplementary malignment) of your original reads on your assembly. If there are locations at which there are many split mappings, it is very likely this is an assembly error. This would usually be done using the mapper above, [`bwa mem`](https://github.com/lh3/bwa) and then some data manipulation to find regions with lots of supplementary reads.<br>
+Finally, check the split mappings (supplementary malignment) of your original reads on your assembly. If there are locations at which there are many split mappings, it is very likely this is an assembly error. This would usually be done using the mapper above, [`minimap2`](https://github.com/lh3/minimap2) and then some data manipulation to find regions with lots of supplementary reads.<br>
 There are also packages to do assembly QC. I am not well acquainted with them, and many require short reads. [`QUAST`](https://github.com/ablab/quast) is not very useful in this case, as the assemblies we are usually looking at are complete and single contig. [`ALE`](https://bioinformaticshome.com/tools/wga/descriptions/ALE-Assembly.html#gsc.tab=0) works better with short reads as far as I know
 
 ### Conclusions
