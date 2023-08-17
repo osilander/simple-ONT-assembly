@@ -146,7 +146,8 @@ cat reads.fastq | chopper --contam ref.fasta > uncontam.reads.fastq
 For assembly we will use `raven`. This is a great and fast assembler. On a laptop it might take ten minutes. On a reasonable server-scale computer (e.g. 40 threads, 200GB RAM), it should take less than two minutes. Be very careful, the assembly will output directly to standard out (the terminal window), so we have to redirect the output to a file. The default number of threads is quite small, so here we give it 16. Note the redirect arrow `>` and the output to a `.fasta` file. Note that in the syntax below I have returned to the `reads.fastq` naming rather than `uncontam.reads.fastq`.
 
 ```bash
-raven -t 16 trim.reads.fastq > assembly.fasta
+# we watn a gfa output as well
+raven -t 16 --graphical-fragment-assembly assembly.gfa trim.reads.fastq > assembly.fasta
 ```
 
 ### Polishing
@@ -174,7 +175,7 @@ For a quick summary of the assembly we will use `seqkit` again. This is relative
 seqkit stats -a polished.assembly.fasta
 ```
 
-With luck, the summary will indicate a single (or small number) of contigs. Note that `raven` _does not_ output a graph file, so the assembly cannot be visualised with a program like `bandage`. If you want a graph file, I recommend `flye`.
+With luck, the summary will indicate a single (or small number) of contigs. We can also view the assemblhy graph using `bandage`.
 
 ### Annotation
 The last step here is annotation. Here we will use prokka, which is relatively fast and simple to use. As mentioned above, `bakta` is also a possibility, and may even be faster. The result of `prokka` will be an output directory with approximately ten files. Perhaps the most important is the Genbank `.gbk` file, which is compatible with a number of other pieces of software.
